@@ -1,11 +1,11 @@
 from flask import Flask, request, render_template, send_from_directory, redirect, url_for
 import os
 
-# Konfigurasi folder upload
+# Upload folder configuration
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Inisialisasi Flask
+# Flask Initialization
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
