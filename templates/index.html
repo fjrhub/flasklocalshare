@@ -159,7 +159,7 @@
       body.classList.add("dark");
       toggleBtn.textContent = "Light Mode";
 
-      // Jika user sebelumnya pilih theme, gunakan
+      // If the previous user selects a theme, use it
       const savedTheme = localStorage.getItem("theme");
       if (savedTheme === "light") {
         body.classList.remove("dark");
