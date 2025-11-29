@@ -120,6 +120,48 @@
       }
     </style>
   </head>
+  {% if success %}
+  <div
+    id="popup"
+    style="
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #28a745;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      font-weight: bold;
+      z-index: 999;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.3s, transform 0.3s;
+    "
+  >
+    Upload successful!
+  </div>
+
+  <script>
+    const popup = document.getElementById("popup");
+    if (popup) {
+      setTimeout(() => {
+        popup.style.opacity = "1";
+        popup.style.transform = "translateY(0)";
+      }, 50);
+
+      setTimeout(() => {
+        popup.style.opacity = "0";
+        popup.style.transform = "translateY(-10px)";
+      }, 2500);
+
+      setTimeout(() => {
+        popup.remove();
+      }, 3000);
+    }
+  </script>
+  {% endif %}
+
   <body>
     <button class="theme-toggle" id="themeToggle">Dark Mode</button>
 

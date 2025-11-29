@@ -10,29 +10,28 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @app.route("/")
 def home():
     files = os.listdir(UPLOAD_FOLDER)
-    return render_template("index.html", files=files)
+    success = request.args.get("success")  # cek apakah upload berhasil
+    return render_template("index.html", files=files, success=success)
 
 @app.route("/upload/", methods=["POST"])
 def upload_file():
-    if 'file' not in request.files:
+    if "file" not in request.files:
         return redirect(url_for("home"))
 
-    file = request.files['file']
+    file = request.files["file"]
 
-    if file.filename == '':
+    if file.filename == "":
         return redirect(url_for("home"))
 
     file_path = os.path.join(UPLOAD_FOLDER, file.filename)
     file.save(file_path)
 
-    # Langsung redirect ke halaman download
-    return redirect(url_for("download_file", filename=file.filename))
-
+    # redirect ke halaman utama dengan query success
+    return redirect(url_for("home", success=1))
 
 @app.route("/download/<filename>")
 def download_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename, as_attachment=True)
 
-
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=True)
