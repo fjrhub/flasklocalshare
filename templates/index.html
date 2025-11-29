@@ -123,8 +123,25 @@
       body.dark .empty {
         color: #bbb;
       }
+
+      .popup {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        font-weight: bold;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.3s, transform 0.3s;
+        z-index: 999;
+      }
     </style>
   </head>
+
   <body>
     <button class="theme-toggle" id="themeToggle">Dark Mode</button>
 
@@ -156,47 +173,31 @@
       {% endif %}
     </div>
 
-    <!-- POPUP NOTIF -->
-    {% if success %}
-    <div id="popup" style="
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #28a745;
-      color: white;
-      padding: 15px 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      font-weight: bold;
-      z-index: 999;
-      opacity: 0;
-      transform: translateY(-10px);
-      transition: opacity 0.3s, transform 0.3s;
-    ">
-      Upload berhasil!
-    </div>
+    <!-- POPUP -->
+    <div id="popup" class="popup">Upload berhasil!</div>
+
     <script>
+      /* ---- POPUP HANDLER ---- */
       const popup = document.getElementById("popup");
-      if (popup) {
-        setTimeout(() => {
-          popup.style.opacity = "1";
-          popup.style.transform = "translateY(0)";
-        }, 50);
+      const url = new URL(window.location.href);
+
+      if (url.searchParams.get("success") === "1") {
+        popup.style.opacity = "1";
+        popup.style.transform = "translateY(0)";
 
         setTimeout(() => {
           popup.style.opacity = "0";
           popup.style.transform = "translateY(-10px)";
         }, 2500);
 
-        setTimeout(() => {
-          popup.remove();
-        }, 3000);
+        // Hapus query success dari URL tanpa reload
+        url.searchParams.delete("success");
+        window.history.replaceState({}, "", url);
+      } else {
+        popup.remove();
       }
-    </script>
-    {% endif %}
 
-    <!-- DARK MODE -->
-    <script>
+      /* ---- DARK MODE ---- */
       const body = document.body;
       const toggleBtn = document.getElementById("themeToggle");
 
@@ -220,10 +221,8 @@
           localStorage.setItem("theme", "light");
         }
       });
-    </script>
 
-    <!-- DRAG & DROP -->
-    <script>
+      /* ---- DRAG & DROP ---- */
       const dropArea = document.getElementById("dropArea");
       const fileInput = document.getElementById("fileInput");
 
@@ -246,5 +245,6 @@
         }
       });
     </script>
+
   </body>
 </html>
