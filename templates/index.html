@@ -69,6 +69,11 @@
         transition: background 0.3s, border 0.3s;
       }
 
+      .upload-box.dragover {
+        background: #cce5ff;
+        border-color: #3399ff;
+      }
+
       input[type="file"] {
         margin-top: 10px;
         color: var(--text);
@@ -120,58 +125,16 @@
       }
     </style>
   </head>
-  {% if success %}
-  <div
-    id="popup"
-    style="
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #28a745;
-      color: white;
-      padding: 15px 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      font-weight: bold;
-      z-index: 999;
-      opacity: 0;
-      transform: translateY(-10px);
-      transition: opacity 0.3s, transform 0.3s;
-    "
-  >
-    Upload successful!
-  </div>
-
-  <script>
-    const popup = document.getElementById("popup");
-    if (popup) {
-      setTimeout(() => {
-        popup.style.opacity = "1";
-        popup.style.transform = "translateY(0)";
-      }, 50);
-
-      setTimeout(() => {
-        popup.style.opacity = "0";
-        popup.style.transform = "translateY(-10px)";
-      }, 2500);
-
-      setTimeout(() => {
-        popup.remove();
-      }, 3000);
-    }
-  </script>
-  {% endif %}
-
   <body>
     <button class="theme-toggle" id="themeToggle">Dark Mode</button>
 
     <div class="container">
       <h1>File Uploader</h1>
 
-      <div class="upload-box">
-        <form action="/upload/" method="post" enctype="multipart/form-data">
-          <p>Select a file to upload:</p>
-          <input type="file" name="file" required />
+      <div class="upload-box" id="dropArea">
+        <form id="uploadForm" action="/upload/" method="post" enctype="multipart/form-data">
+          <p>Drag & drop file di sini atau klik tombol di bawah:</p>
+          <input type="file" name="file" id="fileInput" required />
           <br />
           <button class="btn-upload">Upload</button>
         </form>
@@ -193,15 +156,53 @@
       {% endif %}
     </div>
 
+    <!-- POPUP NOTIF -->
+    {% if success %}
+    <div id="popup" style="
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #28a745;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      font-weight: bold;
+      z-index: 999;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.3s, transform 0.3s;
+    ">
+      Upload berhasil!
+    </div>
+    <script>
+      const popup = document.getElementById("popup");
+      if (popup) {
+        setTimeout(() => {
+          popup.style.opacity = "1";
+          popup.style.transform = "translateY(0)";
+        }, 50);
+
+        setTimeout(() => {
+          popup.style.opacity = "0";
+          popup.style.transform = "translateY(-10px)";
+        }, 2500);
+
+        setTimeout(() => {
+          popup.remove();
+        }, 3000);
+      }
+    </script>
+    {% endif %}
+
+    <!-- DARK MODE -->
     <script>
       const body = document.body;
       const toggleBtn = document.getElementById("themeToggle");
 
-      // Default = dark mode
       body.classList.add("dark");
       toggleBtn.textContent = "Light Mode";
 
-      // If the previous user selects a theme, use it
       const savedTheme = localStorage.getItem("theme");
       if (savedTheme === "light") {
         body.classList.remove("dark");
@@ -217,6 +218,31 @@
         } else {
           toggleBtn.textContent = "Dark Mode";
           localStorage.setItem("theme", "light");
+        }
+      });
+    </script>
+
+    <!-- DRAG & DROP -->
+    <script>
+      const dropArea = document.getElementById("dropArea");
+      const fileInput = document.getElementById("fileInput");
+
+      ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+        dropArea.addEventListener(eventName, e => e.preventDefault());
+      });
+
+      ["dragenter", "dragover"].forEach(eventName => {
+        dropArea.addEventListener(eventName, () => dropArea.classList.add("dragover"));
+      });
+
+      ["dragleave", "drop"].forEach(eventName => {
+        dropArea.addEventListener(eventName, () => dropArea.classList.remove("dragover"));
+      });
+
+      dropArea.addEventListener("drop", e => {
+        const file = e.dataTransfer.files[0];
+        if (file) {
+          fileInput.files = e.dataTransfer.files;
         }
       });
     </script>
